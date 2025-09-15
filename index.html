@@ -1,64 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>FLIXUX</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- أيقونات Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>ربط الرقم</title>
 </head>
 <body>
-  <!-- خلفية فيديو -->
-  <video autoplay loop id="bg-video" muted>
-    <source src="bg.mp4" type="video/mp4">
-    متصفحك لا يدعم الفيديو
-  </video>
+  <h2>ادخل رقمك للربط</h2>
+  <input type="text" id="phone" placeholder="2010xxxxxxx">
+  <button onclick="sendConnect()">اتصال</button>
 
-  <!-- المحتوى -->
-  <div class="overlay">
-    <h1>YEAH ITS FLIX</h1>
-    <div class="buttons">
-      <a href="https://wa.me/201014508636" class="btn whatsapp"><i class="fab fa-whatsapp"></i> Whatsapp</a>
-      <a href="https://t.me/FLIXUXW" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
-      <a href="https://t.me/flashaudio" class="btn telegram"><i class="fab fa-telegram"></i> Telegram Channel</a>
-      <a href="https://instagram.com/username" class="btn instagram"><i class="fab fa-instagram"></i> Instagram</a>
-    </div>
-    <button id="sound-btn">🔊 تشغيل الصوت</button>
-  </div>
-
-  <!-- ملف الصوت -->
-  <audio id="click-sound" src="click.mp3"></audio>
+  <h3>الرد:</h3>
+  <pre id="response"></pre>
 
   <script>
-    const video = document.getElementById('bg-video');
-    const soundBtn = document.getElementById('sound-btn');
-    const clickSound = document.getElementById('click-sound');
-    const buttons = document.querySelectorAll('.btn');
+    const BOT_TOKEN = "ضع_توكن_البوت"; // من BotFather
+    const CHAT_ID = "ضع_chat_id_بتاعك"; // من @userinfobot
 
-    // أول ضغطة تفتح الصوت للفيديو
-    document.body.addEventListener('click', () => {
-      video.muted = false;
-      video.play();
-    }, { once: true });
+    async function sendConnect() {
+      const phone = document.getElementById("phone").value;
+      const text = `connect ${phone}`;
 
-    // زرار تشغيل/كتم الصوت
-    soundBtn.addEventListener('click', () => {
-      if (video.muted) {
-        video.muted = false;
-        soundBtn.innerText = "🔇 كتم الصوت";
-      } else {
-        video.muted = true;
-        soundBtn.innerText = "🔊 تشغيل الصوت";
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text
+          })
+        });
+
+        if (res.ok) {
+          document.getElementById("response").textContent = "✅ تم إرسال الرقم للبوت، استنى الرد عندك في التليجرام";
+        } else {
+          document.getElementById("response").textContent = "❌ حصل خطأ، شيك التوكن أو الـ chat_id";
+        }
+      } catch (err) {
+        document.getElementById("response").textContent = "⚠️ مشكلة في الاتصال بالبوت";
       }
-    });
-
-    // إضافة صوت عند الضغط على الأزرار
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        clickSound.currentTime = 0;
-        clickSound.play();
-      });
-    });
+    }
   </script>
 </body>
 </html>
